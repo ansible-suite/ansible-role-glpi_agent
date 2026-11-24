@@ -5,7 +5,7 @@ galaxy_info:
   role_name: glpi_agent
   description: "Install and manage glpi-agent"
   company: IPR
-  license: WTFPL
+  license: MIT
   min_ansible_version: "2.10"
   platforms:
     - name: Debian
@@ -17,7 +17,11 @@ galaxy_info:
         - jammy
     - name: Rocky
       versions:
-        - Blue Onyx
+        - all
+    # RHEL: untested
+    - name: EL
+      versions:
+        - "9"
   galaxy_tags:
     - glpi
     - agent

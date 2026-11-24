@@ -6,3 +6,8 @@
 # GLPI Agent configuration from raw content
 {{ glpi_agent__conf_raw }}
 {% endif %}
+
+{% if not glpi_agent__httpd_enabled | bool %}
+# Active mode only: disable the embedded web server (no inbound connection)
+no-httpd = 1
+{% endif %}

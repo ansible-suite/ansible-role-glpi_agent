@@ -1,0 +1,42 @@
+---
+# .. vim: foldmarker=[[[,]]]:foldmethod=marker
+#
+# tasks file for RedHat (RHEL). UNTESTED: derived from tasks/Rocky.yml.
+#
+# Differences from Rocky:
+# * epel-release is not in RHEL repositories, so it is installed from the
+#   Fedora project (with its GPG key imported first).
+# * The "crb" repository is named codeready-builder-for-rhel-<major>-<arch>-rpms
+#   and requires a valid RHEL subscription (subscription-manager).
+
+# Install GLPI Agent from remote .rpm file [[[1
+# Package perl(Net::IP), perl(Parallel::ForkManager), perl(Proc::Daemon), perl(Socket::GetAddrInfo), perl(UNIVERSAL::require) are in EPEL
+- name: Import the EPEL GPG key
+  ansible.builtin.rpm_key:
+    key: 'https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_facts["distribution_major_version"] }}'
+    state: present
+  when:
+    - glpi_agent__install_from_url | bool
+
+- name: Ensure the EPEL repository is enabled
+  ansible.builtin.dnf:
+    name: 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_facts["distribution_major_version"] }}.noarch.rpm'
+    state: present
+  register: ga_epel_result
+  until: ga_epel_result is success
+  when:
+    - glpi_agent__install_from_url | bool
+
+# Package perl(DateTime), perl(Data::UUID), perl(HTTP::Daemon), perl(YAML::Tiny) are in the CodeReady Builder repo
+# `disable_gpg_check: true` because the GLPI Agent rpm is not signed
+# (see also tasks/Rocky.yml).
+- name: Ensure GLPI Agent package from URL
+  ansible.builtin.dnf:
+    name: '{{ glpi_agent__package_url }}'
+    state: present
+    enablerepo: 'codeready-builder-for-rhel-{{ ansible_facts["distribution_major_version"] }}-{{ ansible_facts["architecture"] }}-rpms'
+    disable_gpg_check: true
+  register: ga_url_pkg_result
+  until: ga_url_pkg_result is success
+  when:
+    - glpi_agent__install_from_url | bool

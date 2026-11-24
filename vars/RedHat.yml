@@ -9,13 +9,13 @@
 # .. existing variable.
 # .. ]]]
 
-## Rocky dedicated variables
+## RedHat family dedicated variables (RHEL, Rocky,…)
 
 # These variables can't be overrided by the user.
 
-### Packages and installation for Rocky [[[
+### Packages and installation for RedHat family [[[
 
-#### Rocky glpi_agent__depends_packages [[[
+#### RedHat glpi_agent__depends_packages [[[
 # **List**. Dependencies for GLPI Agent package.
 # * Based on `yum repoquery --deplist ` output for .rpm package version **1.11-1**.
 # * To skip the installation of these packages,
@@ -74,7 +74,7 @@ glpi_agent__depends_packages:
   - perl-XML-LibXML
 # ]]]
 
-#### Rocky glpi_agent__recommends_packages [[[
+#### RedHat glpi_agent__recommends_packages [[[
 # **List**. Recommandations for GLPI Agent package.
 # * Based on `yum repoquery --deplist` output for .rpm package version **1.11-1**.
 # * To skip the installation of these packages,
@@ -83,7 +83,7 @@ glpi_agent__depends_packages:
 glpi_agent__recommends_packages:
 # ]]]
 
-#### Rocky glpi_agent__suggests_packages [[[
+#### RedHat glpi_agent__suggests_packages [[[
 # **List**. Suggestions for GLPI Agent package.
 # * Based on `yum repoquery --deplist` output for .rpm package version **1.5-1**.
 # * To skip the installation of these packages,

@@ -1,25 +1,24 @@
 # Makefile
 
-.PHONY: help
-
 TEMP_DIR         = .tmp
 PYTHON           = python3
 PYTHON_VENV      = ${TEMP_DIR}/venv
 BIN_DIR          = bin
+ROLE_NAME        = glpi-agent
 ## Colors
 PURPLE           = \033[1;35m
 RESET            = \033[0m
 
-help:
-	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  doc        to make README.md file"
-	@echo "  lint       to check files using linters, from Python venv"
-	@echo "  ansible    to check files using ansible-lint only, from Python venv"
-	@echo "  yaml|yml   to check files using yamllint only, from Python venv"
-	@echo "  clean      to remove temp directory (${TEMP_DIR})"
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help:              ## Show this help
+	@printf '%b\n' "Usage: make ${PURPLE}<target>${RESET}\n\nTargets:"
+	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) \
+		| awk -v c='${PURPLE}' -v r='${RESET}' 'BEGIN {FS = ":.*## "} {printf "  %s%-10s%s %s\n", c, $$1, r, $$2}'
 
 .PHONY: doc
-doc: clean
+doc: clean         ## Generate README.md from docs/ and defaults/vars comments
 doc:
 	## Manage defaults/main.yml Markdown content
 	@printf '%b\n' "${PURPLE}Remove any previous file.${RESET}"
@@ -38,32 +37,40 @@ doc:
 	@cd docs && \
 		find * -maxdepth 0 -type f -name "vars_*.md" -exec mv -- {} 15.{} \;
 
+	## Manage the table of contents
+	@$(MAKE) --no-print-directory toc
+
 	## Manage README.md
 	@printf '%b\n' "${PURPLE}Remove any previous file.${RESET}"
 	@rm --force -- README.md
 	@printf '%b\n' "${PURPLE}Build README.md from docs/*.md files.${RESET}"
 	@cat -- docs/*.*.md > README.md
 
+.PHONY: toc
+toc:               ## Generate docs/00.toc.md from the headings of docs/*.md
+	@printf '%b\n' "${PURPLE}Generate docs/00.toc.md.${RESET}"
+	@"${BIN_DIR}/mdtoc.sh" --title "${ROLE_NAME}" --dest docs/00.toc.md docs/*.*.md
+
 .PHONY: lint
-lint:              ## Check Ansible role using linters
+lint:              ## Check files using linters (ansible-lint + yamllint), from Python venv
 lint: test-ansible-lint
 lint: test-yamllint
 
 .PHONY: ansible
-ansible:           ## Check Ansible role using ansible-lint
+ansible:           ## Check files using ansible-lint only, from Python venv
 ansible: test-ansible-lint
 
 .PHONY: yaml
 
-yaml:              ## Test YAML syntax using yamllint
+yaml:              ## Check files using yamllint only, from Python venv
 yaml: test-yamllint
 
 .PHONY: yml
-yml:               ## Test YAML syntax using yamllint
+yml:               ## Alias of yaml
 yml: test-yamllint
 
 .PHONY: clean
-clean:
+clean:             ## Remove temp directory (.tmp)
 	@rm --force --recursive -- "${TEMP_DIR}"
 
 .PHONY: test-ansible-lint

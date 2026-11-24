@@ -1,5 +1,4 @@
-glpi-agent
-==========
+# glpi-agent
 
 1. [Overview](#overview)
 1. [Examples](#examples)
@@ -8,9 +7,11 @@ glpi-agent
      * [Fusioninventory Agent](#fusioninventory-agent)
      * [Configuration](#configuration)
      * [Service](#service)
-     * [Cron Configuration](#cron-configuration)
+     * [Cron configuration](#cron-configuration)
 1. [Debian dedicated variables](#debian-dedicated-variables)
+     * [Packages and installation for Debian](#packages-and-installation-for-debian)
 1. [RedHat family dedicated variables (RHEL, Rocky,…)](#redhat-family-dedicated-variables-rhel-rocky)
+     * [Packages and installation for RedHat family](#packages-and-installation-for-redhat-family)
 1. [Development](#development)
 1. [License](#license)
 1. [Author Information](#author-information)

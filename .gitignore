@@ -4,5 +4,6 @@ docs/vars_*.md
 # Generated doc files by Makefile
 docs/10.*.md
 docs/15.vars_*.md
+docs/00.toc.md
 # Temp directory (Python VirtualEnv, yaml2md,…)
 .tmp

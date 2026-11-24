@@ -4,6 +4,7 @@ TEMP_DIR         = .tmp
 PYTHON           = python3
 PYTHON_VENV      = ${TEMP_DIR}/venv
 BIN_DIR          = bin
+ROLE_NAME        = glpi-agent
 ## Colors
 PURPLE           = \033[1;35m
 RESET            = \033[0m
@@ -36,11 +37,19 @@ doc:
 	@cd docs && \
 		find * -maxdepth 0 -type f -name "vars_*.md" -exec mv -- {} 15.{} \;
 
+	## Manage the table of contents
+	@$(MAKE) --no-print-directory toc
+
 	## Manage README.md
 	@printf '%b\n' "${PURPLE}Remove any previous file.${RESET}"
 	@rm --force -- README.md
 	@printf '%b\n' "${PURPLE}Build README.md from docs/*.md files.${RESET}"
 	@cat -- docs/*.*.md > README.md
+
+.PHONY: toc
+toc:               ## Generate docs/00.toc.md from the headings of docs/*.md
+	@printf '%b\n' "${PURPLE}Generate docs/00.toc.md.${RESET}"
+	@"${BIN_DIR}/mdtoc.sh" --title "${ROLE_NAME}" --dest docs/00.toc.md docs/*.*.md
 
 .PHONY: lint
 lint:              ## Check files using linters (ansible-lint + yamllint), from Python venv

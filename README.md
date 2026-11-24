@@ -10,7 +10,7 @@ glpi-agent
      * [Service](#service)
      * [Cron Configuration](#cron-configuration)
 1. [Debian dedicated variables](#debian-dedicated-variables)
-1. [Rocky dedicated variables](#rocky-dedicated-variables)
+1. [RedHat family dedicated variables (RHEL, Rocky,…)](#redhat-family-dedicated-variables-rhel-rocky)
 1. [Development](#development)
 1. [License](#license)
 1. [Author Information](#author-information)
@@ -113,11 +113,10 @@ https://github.com/glpi-project/glpi-agent/releases/download/1.5/glpi-agent_1.5-
 
 ``` yml
 glpi_agent__package_url: >-
-  {%- if (ansible_os_family in ["Debian"]) -%}
-  https://github.com/glpi-project/glpi-agent/releases/download/{{ glpi_agent__major_version }}/glpi-agent_{{ glpi_agent__version }}_all.deb
-  {%- elif (ansible_os_family in ["RedHat"]) -%}
-  https://github.com/glpi-project/glpi-agent/releases/download/{{ glpi_agent__major_version }}/glpi-agent-{{ glpi_agent__version }}.noarch.rpm
-  {%- endif -%}
+  https://github.com/glpi-project/glpi-agent/releases/download/{{ glpi_agent__major_version }}/{{
+  ('glpi-agent_' ~ glpi_agent__version ~ '_all.deb')
+  if ansible_os_family == 'Debian'
+  else ('glpi-agent-' ~ glpi_agent__version ~ '.noarch.rpm') }}
 ```
 
 #### glpi_agent__depends
@@ -188,6 +187,17 @@ glpi_agent__conf_file_dest: '/etc/glpi-agent/conf.d/00-ansible.cfg'
 
 ``` yml
 glpi_agent__conf_file_src: '{{ "../templates" + glpi_agent__conf_file_dest + ".j2" }}'
+```
+
+#### glpi_agent__httpd_enabled
+**Boolean**. Enable the agent's embedded web server (port 62354), which lets
+the GLPI server request an immediate inventory (inbound connection).
+Disabled by default: the agent works in active mode only, it initiates all
+communication to the server itself (`no-httpd = 1` is written to the
+configuration file).
+
+``` yml
+glpi_agent__httpd_enabled: false
 ```
 
 #### glpi_agent__conf_raw
@@ -357,13 +367,13 @@ glpi_agent__suggests_packages:
 ```
 
 
-## Rocky dedicated variables
+## RedHat family dedicated variables (RHEL, Rocky,…)
 
 These variables can't be overrided by the user.
 
-### Packages and installation for Rocky
+### Packages and installation for RedHat family
 
-#### Rocky glpi_agent__depends_packages
+#### RedHat glpi_agent__depends_packages
 **List**. Dependencies for GLPI Agent package.
 * Based on `yum repoquery --deplist ` output for .rpm package version **1.11-1**.
 * To skip the installation of these packages,
@@ -423,7 +433,7 @@ glpi_agent__depends_packages:
   - perl-XML-LibXML
 ```
 
-#### Rocky glpi_agent__recommends_packages
+#### RedHat glpi_agent__recommends_packages
 **List**. Recommandations for GLPI Agent package.
 * Based on `yum repoquery --deplist` output for .rpm package version **1.11-1**.
 * To skip the installation of these packages,
@@ -433,7 +443,7 @@ glpi_agent__depends_packages:
 glpi_agent__recommends_packages:
 ```
 
-#### Rocky glpi_agent__suggests_packages
+#### RedHat glpi_agent__suggests_packages
 **List**. Suggestions for GLPI Agent package.
 * Based on `yum repoquery --deplist` output for .rpm package version **1.5-1**.
 * To skip the installation of these packages,
@@ -458,7 +468,9 @@ Feel free to share any good practices (for Debian/CentOS) and requests (and PRs 
 
 ## License
 
-[WTFPL][wtfpl website]
+[MIT](LICENSE)
+
+Originally released under the WTFPL by Jérémy Gardais (IPR, CNRS).
 
 ## Author Information
 
@@ -474,4 +486,3 @@ Jérémy Gardais
 [ipr-cnrs fusioninventory github]: https://github.com/ipr-cnrs/fusioninventory
 [ipr website]: https://ipr.univ-rennes.fr/
 [university rennes website]: https://www.univ-rennes.fr/
-[wtfpl website]: http://www.wtfpl.net/about/
